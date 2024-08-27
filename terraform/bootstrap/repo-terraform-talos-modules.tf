@@ -11,7 +11,7 @@ resource "github_repository" "terraform_talos_modules" {
   has_issues             = true
   has_projects           = false
   has_wiki               = false
-  visibility             = "private"
+  visibility             = "public"
 
   topics = [
     "terraform",
