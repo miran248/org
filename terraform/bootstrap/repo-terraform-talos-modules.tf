@@ -20,3 +20,11 @@ resource "github_repository" "terraform_talos_modules" {
     "hetzner",
   ]
 }
+
+resource "tfe_workspace" "terraform_talos_modules" {
+  name               = "terraform-talos-modules"
+  organization       = data.tfe_organization.this.name
+  allow_destroy_plan = true
+  terraform_version  = "latest"
+  working_directory  = "dev"
+}
