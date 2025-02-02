@@ -3,16 +3,24 @@ terraform {
     organization = "miran248"
 
     workspaces {
-      name = "org-bootstrap"
+      name = "bootstrap"
     }
   }
   required_providers {
     github = {
       source = "integrations/github"
     }
+    google = {
+      source = "hashicorp/google"
+    }
+    hcloud = {
+      source = "hetznercloud/hcloud"
+    }
+    scaleway = {
+      source = "scaleway/scaleway"
+    }
     tfe = {
       source = "hashicorp/tfe"
     }
   }
-  required_version = ">= 1"
 }

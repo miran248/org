@@ -1,0 +1,51 @@
+resource "google_iam_workload_identity_pool" "oidc_tfc" {
+  for_each = local.gcp.projects
+
+  project = local.google_projects[each.key].project_id
+
+  workload_identity_pool_id = "terraform"
+}
+resource "google_iam_workload_identity_pool_provider" "oidc_tfc" {
+  for_each = local.gcp.projects
+
+  project = local.google_projects[each.key].project_id
+
+  workload_identity_pool_id          = google_iam_workload_identity_pool.oidc_tfc[each.key].workload_identity_pool_id
+  workload_identity_pool_provider_id = "terraform-oidc"
+
+  attribute_mapping = {
+    "google.subject" = "assertion.sub"
+    "attribute.aud"  = "assertion.aud"
+  }
+  attribute_condition = "assertion.sub.startsWith(\"${each.value.tfc.oidc}\")"
+
+  oidc {
+    issuer_uri = "https://app.terraform.io"
+  }
+}
+
+resource "google_service_account" "oidc_tfc" {
+  for_each = local.gcp.projects
+
+  project = local.google_projects[each.key].project_id
+
+  account_id = "terraform"
+}
+resource "google_service_account_iam_member" "oidc_tfc" {
+  for_each = local.gcp.projects
+
+  service_account_id = google_service_account.oidc_tfc[each.key].id
+  role               = "roles/iam.workloadIdentityUser"
+  member             = "principalSet://iam.googleapis.com/${google_iam_workload_identity_pool.oidc_tfc[each.key].name}/*"
+}
+
+module "oidc_tfc" {
+  for_each = local.tfc.workspaces
+
+  source = "../modules/gcp-oidc-tfc"
+
+  tfc_workspace_id = local.tfe_workspaces[each.key].id
+
+  gcp_pool_provider_name    = google_iam_workload_identity_pool_provider.oidc_tfc[each.value.keys.gcp.project].name
+  gcp_service_account_email = google_service_account.oidc_tfc[each.value.keys.gcp.project].email
+}
