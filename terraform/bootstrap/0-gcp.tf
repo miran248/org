@@ -9,8 +9,8 @@ data "google_billing_account" "this" {
 }
 
 # secrets
-data "google_secret_manager_secret_version" "github_token" {
-  secret = "github-token"
+data "google_secret_manager_secret_version" "github" {
+  secret = "github"
 }
 data "google_secret_manager_secret_version" "scaleway" {
   secret = "scaleway"

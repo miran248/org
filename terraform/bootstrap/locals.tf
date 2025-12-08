@@ -1,10 +1,13 @@
 locals {
-  github_token = data.google_secret_manager_secret_version.github_token.secret_data
-  scaleway     = jsondecode(data.google_secret_manager_secret_version.scaleway.secret_data)
+  tokens = {
+    github   = data.google_secret_manager_secret_version.github.secret_data
+    scaleway = jsondecode(data.google_secret_manager_secret_version.scaleway.secret_data)
+  }
 
   s0 = {
     gcp = {
       services = [
+        "cloudbilling.googleapis.com",
         "dns.googleapis.com",
         "secretmanager.googleapis.com",
         "serviceusage.googleapis.com",
@@ -30,27 +33,11 @@ locals {
   s1 = {
     envs = [
       {
-        key   = "miran248-org-bootstrap"
-        owned = true
-        gcp = {
-          project  = "miran248-org-bootstrap"
-          services = flatten([local.s0.gcp.services, "admin.googleapis.com", "cloudbilling.googleapis.com"])
-          org_roles = [
-            "roles/billing.user",
-            "roles/dns.admin",
-            "roles/resourcemanager.organizationAdmin",
-            "roles/secretmanager.admin",
-            "roles/serviceusage.serviceUsageAdmin",
-
-            "roles/iam.securityAdmin",
-            "roles/iam.serviceAccountAdmin",
-            "roles/iam.serviceAccountKeyAdmin",
-            "roles/iam.workloadIdentityPoolAdmin",
-          ]
-          roles = flatten([local.s0.gcp.roles, "roles/editor"])
-        }
-        sw  = { project = "miran248-org-bootstrap" }
-        tfc = { organization = "miran248", project = "org", workspace = "bootstrap", working_directory = "terraform/bootstrap" }
+        key      = "miran248-org-bootstrap"
+        owned    = false
+        gcp      = { project = "miran248-org-bootstrap" }
+        scaleway = { project = "miran248-org-bootstrap" }
+        tfc      = { organization = "miran248", project = "org", workspace = "bootstrap", working_directory = "terraform/bootstrap" }
       },
       {
         key   = "miran248-terraform-talos-modules-dev"
@@ -61,8 +48,8 @@ locals {
           org_roles = ["roles/resourcemanager.folderAdmin", "roles/resourcemanager.organizationViewer"]
           roles     = flatten([local.s0.gcp.roles, "roles/storage.admin"])
         }
-        sw  = { project = "miran248-terraform-talos-modules-dev" }
-        tfc = { organization = "miran248", project = "terraform-talos-modules", workspace = "dev", working_directory = "dev" }
+        scaleway = { project = "miran248-terraform-talos-modules-dev" }
+        tfc      = { organization = "miran248", project = "terraform-talos-modules", workspace = "dev", working_directory = "dev" }
       },
     ]
   }
@@ -76,8 +63,8 @@ locals {
         gcp = {
           project = env.gcp.project
         }
-        sw = {
-          project = env.sw.project
+        scaleway = {
+          project = env.scaleway.project
         }
         tfc = {
           organization = env.tfc.organization
@@ -91,8 +78,8 @@ locals {
   gcp = {
     projects = { for env in local.s2.envs : env.keys.gcp.project => env }
   }
-  sw = {
-    projects = { for env in local.s2.envs : env.keys.sw.project => env }
+  scaleway = {
+    projects = { for env in local.s2.envs : env.keys.scaleway.project => env }
   }
   tfc = {
     organizations = merge([for env in local.s2.envs : { "${env.keys.tfc.organization}" = env }]...)

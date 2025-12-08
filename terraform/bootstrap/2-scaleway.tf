@@ -1,7 +1,7 @@
 resource "scaleway_account_project" "this" {
-  for_each = { for key, env in local.sw.projects : key => env if env.owned }
+  for_each = { for key, env in local.scaleway.projects : key => env if env.owned }
 
-  name = each.value.sw.project
+  name = each.value.scaleway.project
 }
 resource "scaleway_iam_application" "this" {
   for_each = scaleway_account_project.this
@@ -39,9 +39,9 @@ resource "google_secret_manager_secret_version" "scaleway" {
   secret = each.value.id
 
   secret_data = jsonencode({
-    organization_id = local.scaleway.organization_id
-    project_id      = scaleway_account_project.this[local.gcp.projects[each.key].keys.sw.project].id
-    access_key      = scaleway_iam_api_key.this[local.gcp.projects[each.key].keys.sw.project].access_key
-    secret_key      = scaleway_iam_api_key.this[local.gcp.projects[each.key].keys.sw.project].secret_key
+    organization_id = local.tokens.scaleway.organization_id
+    project_id      = scaleway_account_project.this[local.gcp.projects[each.key].keys.scaleway.project].id
+    access_key      = scaleway_iam_api_key.this[local.gcp.projects[each.key].keys.scaleway.project].access_key
+    secret_key      = scaleway_iam_api_key.this[local.gcp.projects[each.key].keys.scaleway.project].secret_key
   })
 }

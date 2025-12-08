@@ -10,7 +10,7 @@ resource "google_project" "this" {
 }
 
 module "project_services" {
-  for_each = local.gcp.projects
+  for_each = { for key, env in local.gcp.projects : key => env if env.owned }
 
   source = "../modules/gcp-project-services"
 
@@ -19,7 +19,7 @@ module "project_services" {
   services = each.value.gcp.services
 }
 module "organization_roles" {
-  for_each = local.gcp.projects
+  for_each = { for key, env in local.gcp.projects : key => env if env.owned }
 
   source = "../modules/gcp-organization-roles"
 
@@ -29,7 +29,7 @@ module "organization_roles" {
   roles = each.value.gcp.org_roles
 }
 module "project_roles" {
-  for_each = local.gcp.projects
+  for_each = { for key, env in local.gcp.projects : key => env if env.owned }
 
   source = "../modules/gcp-project-roles"
 

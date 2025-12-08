@@ -5,7 +5,7 @@ resource "google_secret_manager_secret" "github" {
 
   project = each.value.project_id
 
-  secret_id = "github-token"
+  secret_id = "github"
 
   replication {
     auto {
@@ -16,5 +16,5 @@ resource "google_secret_manager_secret_version" "github" {
   for_each = google_secret_manager_secret.github
 
   secret      = each.value.id
-  secret_data = local.github_token
+  secret_data = local.tokens.github
 }

@@ -4,6 +4,7 @@
 provider "registry.terraform.io/hashicorp/google" {
   version = "6.18.1"
   hashes = [
+    "h1:9hflnSuKoJDbgRd3Lr7YEn2DKCcD9vyLwvDHRHEmp/o=",
     "h1:silHbG85FbXFIx9hciPP8G2l6/gYihCLmoHKF6ilGvw=",
     "zh:43543160dc2cee6f05b37eadc49e0da2ed99b1d16ca40dcb74de4ec17bf30430",
     "zh:44e92661b6b2e7823f931c459780eaa844c7ee8fecca676aa632ededfc0d6180",
@@ -24,6 +25,7 @@ provider "registry.terraform.io/hashicorp/tfe" {
   version = "0.63.0"
   hashes = [
     "h1:6VDs+niMh2RLDVAdfs2GSGXiyp0/L2IlEyET9/3GeKE=",
+    "h1:ELNI8L5VoEN9uJ2WTvTqNl0xd+UTh86MPBY83UOi2QU=",
     "zh:2c9204c9d7b278146a91a1014a00a5ad92aa47dae3499e9a16611c29adf20169",
     "zh:3920d175d25e03ab243edd6daa5b999d4ae2f8a0dd23b24dcebb08c3c4b1b7df",
     "zh:4173fd121ba01b0903847c61c8138ecd450413a1220dad6e2920c0b1c8f6f783",
@@ -43,6 +45,7 @@ provider "registry.terraform.io/hetznercloud/hcloud" {
   version = "1.49.1"
   hashes = [
     "h1:6j9/70ZTr1G4d0BPSk0163/SSHJZD31f489cdV0k80M=",
+    "h1:PP6CUy9TR1JiaiW81dTVbXcheqWUeDhgS2T2LTo7B10=",
     "zh:3d5f9773da4f8203cf625d04a5a0e4ff7e202684c010a801a945756140c61cde",
     "zh:446305d492017cda91e5c15122ec16ff15bfe3ef4d3fd6bcea0cdf7742ab1b86",
     "zh:44d4f9156ed8b4f0444bd4dc456825940be49048828565964a192286d28c9f20",
@@ -64,6 +67,7 @@ provider "registry.terraform.io/integrations/github" {
   version = "6.5.0"
   hashes = [
     "h1:KN6W+TRczQXMQLAI5Cn/xpvJzq8r+/AQCZaxGURXQ3A=",
+    "h1:rMuaCjyJo4zR9CKZoB1kCpZ9pZke4rlfd+ea0vCpaVg=",
     "zh:3088bfd30c51ebfcb7c8d829465ec7b3c19af684cf1aff1ea1111ad3c6421c11",
     "zh:34f9054b0123f9fa7ab8ebc73591d2cf502f1cc75e7594bde42ce799fcac32b6",
     "zh:406dc2e63d43a24ac4f1b004e5c60ada3347207ea750bbd51e6199eb7f044f9f",
@@ -86,6 +90,7 @@ provider "registry.terraform.io/scaleway/scaleway" {
   version = "2.49.0"
   hashes = [
     "h1:d5LvzChvTpsHi082V/A4bSFiDu2vnPMerLGnY5Amo0s=",
+    "h1:s6peG8mlJ2wD8ph+O9jb3I1M2y9H7SSvhQ/7ecflnXI=",
     "zh:075b209051ee936d7a64883d3597e2518be1fd19a26587b4bc3bbe2140725d03",
     "zh:121e1df4202e6330459f165ea704bbc5f8d2156d4996097b4702a3cf7d6a7d54",
     "zh:167521f02d2f46683d91b1f4e36fdcf9fdd426cbd94bbc0a794d023556be4887",

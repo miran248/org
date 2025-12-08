@@ -1,8 +1,3 @@
-# variable sets
-data "tfe_variable_set" "tfe" {
-  name = "tfe"
-}
-
 # environments
 data "tfe_organization" "this" {
   for_each = { for key, env in local.tfc.organizations : key => env if env.owned == false }

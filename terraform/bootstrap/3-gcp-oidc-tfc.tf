@@ -1,12 +1,12 @@
 resource "google_iam_workload_identity_pool" "oidc_tfc" {
-  for_each = local.gcp.projects
+  for_each = { for key, env in local.gcp.projects : key => env if env.owned }
 
   project = local.google_projects[each.key].project_id
 
   workload_identity_pool_id = "terraform"
 }
 resource "google_iam_workload_identity_pool_provider" "oidc_tfc" {
-  for_each = local.gcp.projects
+  for_each = { for key, env in local.gcp.projects : key => env if env.owned }
 
   project = local.google_projects[each.key].project_id
 
@@ -25,14 +25,14 @@ resource "google_iam_workload_identity_pool_provider" "oidc_tfc" {
 }
 
 resource "google_service_account" "oidc_tfc" {
-  for_each = local.gcp.projects
+  for_each = { for key, env in local.gcp.projects : key => env if env.owned }
 
   project = local.google_projects[each.key].project_id
 
   account_id = "terraform"
 }
 resource "google_service_account_iam_member" "oidc_tfc" {
-  for_each = local.gcp.projects
+  for_each = { for key, env in local.gcp.projects : key => env if env.owned }
 
   service_account_id = google_service_account.oidc_tfc[each.key].id
   role               = "roles/iam.workloadIdentityUser"
@@ -40,7 +40,7 @@ resource "google_service_account_iam_member" "oidc_tfc" {
 }
 
 module "oidc_tfc" {
-  for_each = local.tfc.workspaces
+  for_each = { for key, env in local.tfc.workspaces : key => env if env.owned }
 
   source = "../modules/gcp-oidc-tfc"
 
