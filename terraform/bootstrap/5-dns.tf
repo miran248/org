@@ -2,13 +2,16 @@ data "google_project" "sh_248" {
   project_id = "sh-248-org-bootstrap"
 }
 data "google_dns_managed_zone" "sh_248" {
-  project  = data.google_project.sh_248.project_id
-  name     = "sh-248"
+  project = data.google_project.sh_248.project_id
+  name    = "sh-248"
+}
+data "google_project" "miran248-talos-modules-dev" {
+  project_id = "miran248-talos-modules-dev"
 }
 
 # terraform-talos-modules-dev
 resource "google_dns_managed_zone" "miran248_ttm_dev" {
-  project  = google_project.this["miran248-talos-modules-dev"].project_id
+  project  = data.google_project.miran248-talos-modules-dev.project_id
   name     = "dev"
   dns_name = "dev.248.sh."
 

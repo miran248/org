@@ -82,11 +82,13 @@ locals {
     projects = { for env in local.s2.envs : env.keys.scaleway.project => env }
   }
   tfc = {
-    organizations = merge([for env in local.s2.envs : { "${env.keys.tfc.organization}" = env }]...)
-    projects      = merge([for env in local.s2.envs : { "${env.keys.tfc.project}" = env }]...)
-    workspaces    = merge([for env in local.s2.envs : { "${env.keys.tfc.workspace}" = env }]...)
+    organizations          = merge([for env in local.s2.envs : { "${env.keys.tfc.organization}" = env }]...)
+    owned_organizations    = []
+    existing_organizations = ["miran248"]
+    projects               = merge([for env in local.s2.envs : { "${env.keys.tfc.project}" = env }]...)
+    workspaces             = merge([for env in local.s2.envs : { "${env.keys.tfc.workspace}" = env }]...)
   }
 
-  google_projects = { for key, env in local.gcp.projects : key => env.owned ? google_project.this[key] : data.google_project.this[key] }
-  tfe_workspaces  = { for key, env in local.tfc.workspaces : key => env.owned ? tfe_workspace.this[key] : data.tfe_workspace.this[key] }
+  # google_projects = { for key, env in local.gcp.projects : key => env.owned ? google_project.this[key] : data.google_project.this[key] }
+  # tfe_workspaces  = { for key, env in local.tfc.workspaces : key => env.owned ? tfe_workspace.this[key] : data.tfe_workspace.this[key] }
 }

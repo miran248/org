@@ -1,3 +1,3 @@
-data "scaleway_iam_group" "admins" {
-  name = "Administrators"
-}
+# data "scaleway_iam_group" "admins" {
+#   name = "Administrators"
+# }

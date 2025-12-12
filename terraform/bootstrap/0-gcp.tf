@@ -1,12 +1,12 @@
 # environments
-data "google_organization" "this" {
-  domain = "248.sh"
-}
-data "google_billing_account" "this" {
-  display_name = "main"
+# data "google_organization" "this" {
+#   domain = "248.sh"
+# }
+# data "google_billing_account" "this" {
+#   display_name = "main"
 
-  lookup_projects = false
-}
+#   lookup_projects = false
+# }
 
 # secrets
 data "google_secret_manager_secret_version" "github" {
