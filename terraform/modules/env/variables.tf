@@ -10,7 +10,8 @@ variable "gcp" {
 
 variable "scw" {
   type = object({
-    project = string
+    organization_id = string
+    project         = string
   })
   description = "scw project"
 }
@@ -27,8 +28,7 @@ variable "tfc" {
 
 variable "tokens" {
   type = object({
-    github   = string
-    scaleway = string
+    github = string
   })
   description = "externally managed tokens"
 }

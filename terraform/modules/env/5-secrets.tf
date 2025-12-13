@@ -12,9 +12,8 @@ resource "google_secret_manager_secret" "github" {
   }
 }
 resource "google_secret_manager_secret_version" "github" {
-  for_each = google_secret_manager_secret.github
+  secret = google_secret_manager_secret.github.id
 
-  secret      = each.value.id
   secret_data = var.tokens.github
 }
 
@@ -30,8 +29,12 @@ resource "google_secret_manager_secret" "scaleway" {
   }
 }
 resource "google_secret_manager_secret_version" "scaleway" {
-  for_each = google_secret_manager_secret.scaleway
+  secret = google_secret_manager_secret.scaleway.id
 
-  secret      = each.value.id
-  secret_data = var.tokens.scaleway
+  secret_data = jsonencode({
+    organization_id = var.scw.organization_id
+    project_id      = scaleway_account_project.this.id
+    access_key      = scaleway_iam_api_key.this.access_key
+    secret_key      = scaleway_iam_api_key.this.secret_key
+  })
 }
