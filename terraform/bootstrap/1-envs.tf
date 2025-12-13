@@ -9,4 +9,6 @@ module "miran248-terraform-talos-modules-dev" {
   }
   scw = { project = "miran248-terraform-talos-modules-dev" }
   tfc = { organization = "miran248", project = "terraform-talos-modules", workspace = "dev", working_directory = "dev" }
+
+  tokens = local.tokens
 }

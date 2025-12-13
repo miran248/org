@@ -24,3 +24,11 @@ variable "tfc" {
   })
   description = "tfc workspace"
 }
+
+variable "tokens" {
+  type = object({
+    github   = string
+    scaleway = string
+  })
+  description = "externally managed tokens"
+}
