@@ -22,9 +22,10 @@ module "terraform_talos_modules_dev" {
 
 # dns
 resource "google_dns_managed_zone" "terraform_talos_modules_dev" {
-  project  = data.google_project.terraform_talos_modules_dev.project_id
+  project = data.google_project.terraform_talos_modules_dev.project_id
+
   name     = "dev"
-  dns_name = "dev.248.sh."
+  dns_name = "dev.${data.google_dns_managed_zone.sh_248.dns_name}"
 
   dnssec_config {
     state = "on"
@@ -33,9 +34,10 @@ resource "google_dns_managed_zone" "terraform_talos_modules_dev" {
 resource "google_dns_record_set" "terraform_talos_modules_dev" {
   project      = data.google_project.sh_248.project_id
   managed_zone = data.google_dns_managed_zone.sh_248.name
-  name         = "dev.${data.google_dns_managed_zone.sh_248.dns_name}"
-  type         = "NS"
-  ttl          = 300
+
+  name = google_dns_managed_zone.terraform_talos_modules_dev.dns_name
+  type = "NS"
+  ttl  = 300
 
   rrdatas = google_dns_managed_zone.terraform_talos_modules_dev.name_servers
 }
