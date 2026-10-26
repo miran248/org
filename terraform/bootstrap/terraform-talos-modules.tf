@@ -65,3 +65,14 @@ resource "github_repository" "terraform_talos_modules" {
     "hetzner",
   ]
 }
+
+# talos images
+resource "scaleway_object_bucket" "terraform_talos_modules_dev_images" {
+  name          = "${module.terraform_talos_modules_dev.scw.project}-images"
+  project_id    = module.terraform_talos_modules_dev.ids.scw.project
+  force_destroy = true
+
+  versioning {
+    enabled = false
+  }
+}
