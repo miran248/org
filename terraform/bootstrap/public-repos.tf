@@ -89,7 +89,7 @@ locals {
       description      = "Anonymous, stateless Multica agent catalog: roles, skills, workflows and a by-name sync."
       homepage_url     = ""
       topics           = []
-      allow_auto_merge = true
+      allow_auto_merge = false
       has_issues       = true
       has_projects     = true
       has_wiki         = true
