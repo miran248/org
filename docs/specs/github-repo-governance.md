@@ -8,7 +8,7 @@ A fresh audit of the 32 active repos on 2026-11-21 found 68 branches: 12 are mer
 
 ## Solution
 
-One Terraform-owned policy covers all 32 active repos: squash-only merges with delete-on-merge, and every other setting preserved as an explicit snapshot of today's value. The 16 public repos stay in the existing `bootstrap` workspace. The 16 private repos move to a new private repository, `org-private`, whose Terraform root runs in a new `private` TFC workspace in the existing `org` project. The 12 merged branches are deleted once — after a dry run, with a full-SHA report and a documented restore path — while the 17 open-PR heads, the 9 forks and the 3 archived repos are left exactly as they are.
+One Terraform-owned policy covers all 32 active repos: squash-only merges with delete-on-merge, and every other setting preserved as an explicit snapshot of today's value. The 16 public repos stay in the existing `bootstrap` workspace. The 16 private repos move to a new private repository, `org-private`, whose Terraform root runs in a new `private` TFC workspace in the existing `org` project. The 12 merged branches are deleted once — after a dry run, with a full-SHA report and a documented restore path — while every PR head that is still open at cleanup time, the 9 forks and the 3 archived repos are left exactly as they are.
 
 ## User Stories
 
@@ -116,7 +116,7 @@ The `org-private/terraform` layout is: a Terraform block selecting the `miran248
 
 ### Merged-branch cleanup
 
-The cleanup is one-off, runs in the public delivery stage and touches only these 12 branches in 5 repositories:
+The cleanup is one-off, runs in the public delivery stage and touches only these 12 merged branches in 5 repositories. The list was re-derived at the 2026-11-21T17:17Z snapshot. At the audit snapshot `multica-sandbox/spec/mir-270` was at `b4118d3` (equal to `main`); PRs #9 and #10 later merged into it, so it is now `daf3097`, two commits ahead of `main`, and no open PR bases on it. It is not a merged-PR head and not an ancestor of the default branch, so it stays out of the delete set as a non-default integration branch. Its place in the 12 is taken by `multica-sandbox/agent/planner/mir-271-container-harness-spec` (`fd75e15`, PR #9's merged head), so the count stays 12. The other 11 rows are unchanged from the audit and were re-verified at `17:17Z`.
 
 | Repo | Branch | Head SHA | Merged as |
 | --- | --- | --- | --- |
@@ -130,17 +130,17 @@ The cleanup is one-off, runs in the public delivery stage and touches only these
 | `multica-sandbox` | `agent/implementer/5d7b950a78a6` | `0929ee690fa8176e246373af1e2b562a00ea9e3e` | PR #5 |
 | `multica-sandbox` | `agent/implementer/768a098f56c6` | `87388fd24c2f7d305ceda2b34668168ca43fb768` | PR #3 |
 | `multica-sandbox` | `agent/planner/mir-179-driver-spike` | `9f35720e3e7d1daeaafba73636b94a845f07139a` | PR #1 |
-| `multica-sandbox` | `spec/mir-270` | `b4118d3218ce63653234b99f25d9deb1fb623950` | ancestor of default |
+| `multica-sandbox` | `agent/planner/mir-271-container-harness-spec` | `fd75e15290c7728a46522a7e7c93f0913afd739e` | PR #9 (into `spec/mir-270`) |
 | `terraform-talos-modules` | `release-please--branches--main--components--terraform-talos-modules` | `7bae6a8d0429f743197a1475824951f0f7e22ff6` | PR #7 |
 
 Order of operations:
 
-1. **Dry run.** Re-query each branch's head SHA and merged state; compare with the table above. Abort and report if any SHA differs, if one of the 12 is missing, or if a 13th merged branch has appeared. The scope never widens to the unmerged branches.
-2. **Protect open PRs.** For each of the 12, list open PRs whose base is that branch. The only match is `multica-sandbox#9`, whose base is `spec/mir-270`; retarget it to `main` before deleting, so the PR and its head branch survive. No open PR is closed by the cleanup.
+1. **Dry run.** Re-query each branch's head SHA and merged state; compare with the table above. Abort and report if any of the 12 has a different SHA, is missing, or is the base of an open PR. Branches created or moved after the audit snapshot are out of scope: they are listed below, are never deleted, and do not abort the run. The scope never widens beyond the 12 rows.
+2. **Protect open PRs.** For each of the 12, list open PRs whose base is that branch. At rework time none of the 12 is an open-PR base, so no retarget is required. If a base match appears at cleanup time, retarget or keep the branch; never delete an open-PR base and never close a PR.
 3. **Delete.** Delete each branch through the GitHub API, keeping the default branch and every head branch of an open PR. Record repo, branch, full SHA and HTTP status for each of the 12 on the delivery ticket.
-4. **Verify.** Every deleted ref returns 404; all 17 open-PR heads below still resolve; the 9 forks and 3 archived repos show no change.
+4. **Verify.** Every deleted ref returns 404; the open-PR heads below still resolve; the 9 forks and 3 archived repos show no change.
 
-Never touched: the 17 open-PR heads below, the 9 forks and the 3 archived repos.
+Never touched: the 17 open-PR heads below — the 16 audit-set PRs still open (the audit's 17 minus `multica-sandbox#9`, which merged during the slice) plus the post-audit `multica-sandbox#11` — the 9 forks and the 3 archived repos.
 
 | Repo | PR | Head branch | Head SHA | Base |
 | --- | --- | --- | --- | --- |
@@ -158,11 +158,13 @@ Never touched: the 17 open-PR heads below, the 9 forks and the 3 archived repos.
 | `abortable` | #7 | `dependabot/npm_and_yarn/y18n-4.0.1` | `1c1a03b5a2ebe0f49d0dcab699905d91aa8856c3` | `master` |
 | `abortable` | #6 | `dependabot/npm_and_yarn/yargs-parser-13.1.2` | `97d2677e620cefaa972e3ea8c769cc5197f3f4d4` | `master` |
 | `abortable` | #3 | `dependabot/npm_and_yarn/acorn-5.7.4` | `b504241143fdc969093ad49cadcc8048d6d00f46` | `master` |
-| `multica-sandbox` | #9 | `agent/planner/mir-271-container-harness-spec` | `fd75e15290c7728a46522a7e7c93f0913afd739e` | `spec/mir-270` |
+| `multica-sandbox` | #11 | `agent/planner/mir-284-release-spec` | `c31f2f395f0e756d074f49e5fc04ff9eecbec6bc` | `spec/mir-282` |
 | `terra` | #44 | `release-please--branches--main` | `2a3c0568465acf77d721822b031dcc443dccaec5` | `main` |
 | `factory-probe-01bf35` (archived) | #1 | `probe/head` | `8c6c52a4c584f87406447a1d534150c8defe559c` | `main` |
 
-The 17th head is in archived `factory-probe-01bf35`; it is listed so the count is accounted for and is untouchable by policy.
+The archived `factory-probe-01bf35#1` head is listed so the count is accounted for; it is untouchable by policy. This slice's own PRs — the delivery `org#2` (head `MIR-279`, base `spec/MIR-277`) and the spec rework `org#3` (head `MIR-278`, base `spec/MIR-277`) — are also open when the cleanup runs; they are not in the delete set, must not be closed, and they merge into `spec/MIR-277` before the release, so they are not part of the frozen audit set.
+
+Post-audit branches and merges are out of scope and are never in the delete set. After the 15:48Z audit, `multica-sandbox#10` merged at 17:06:52Z and its head branch `agent/implementer/585cf70e780c` was deleted on merge (404); `multica-sandbox/spec/mir-270` moved to `daf3097` and is kept; `multica-sandbox/spec/mir-282` and `spec/mir-283` were created and sit at `main`; and `multica-sandbox/agent/planner/mir-284-release-spec` is the head of open `multica-sandbox#11`. Add this slice's own `spec/MIR-277`, `MIR-278` and `MIR-279`. `spec/mir-282` and `spec/mir-283` are technically ancestors of the default branch and `spec/mir-282` is the base of `multica-sandbox#11`; all of them stay. Their presence is not a reason to abort the cleanup.
 
 ### Release verification
 
@@ -170,7 +172,7 @@ The release proves the slice against the live GitHub API, not against Terraform 
 
 - all 32 active repos are squash-only with delete-on-merge, and auto-merge, description, homepage, topics, issues, projects and wiki equal the tables above;
 - the 12 refs are gone (404) and their recorded SHAs are on the delivery ticket;
-- the 17 open PRs above are still open with the same head SHAs;
+- the open-PR set is preserved: the 16 audit-set PRs above (the audit's 17 minus `multica-sandbox#9`, which merged during the slice) are still open with the same head SHAs, the post-audit `multica-sandbox#11` is still open, and no deleted branch was an open-PR base; this slice's `org#2` and `org#3` have merged into `spec/MIR-277`;
 - `org-private` exists, is private, is squash-only and deletes on merge;
 - the `private` workspace exists in the `org` project with working directory `terraform` and a sensitive `github_token` variable;
 - `terraform plan` is clean in `terraform/bootstrap` and in `org-private/terraform` against the released mains;
@@ -188,7 +190,7 @@ Good verification here asserts externally observable state: the GitHub API and a
 
 - **Plan seam.** After apply, `terraform plan` in both roots reports no changes and the import adoption proposes no replacement or destroy. This is the drift check, not a mock.
 - **API seam.** The release reads each repo's settings, each deleted ref's HTTP status, each open PR's head SHA and the TFC workspace through the API and compares them to this spec. A mismatch is a finding, not a warning.
-- **Dry-run seam.** The cleanup's dry run is the pre-destructive test: it re-derives the 12 branches from the API and refuses to delete on any difference from the recorded SHAs.
+- **Dry-run seam.** The cleanup's dry run is the pre-destructive test: it re-derives the 12 branches from the API, refuses to delete on any difference from the recorded SHAs, and never deletes an open-PR base.
 - **Prior art.** The `bootstrap` workspace is already applied from this repository and is the only precedent; there is no test harness in the repo and this slice adds none.
 
 ## Out of Scope
@@ -199,24 +201,25 @@ Good verification here asserts externally observable state: the GitHub API and a
 - Settings outside the snapshot: Actions permissions, Pages, secrets, collaborators, webhooks, security features, merge queue.
 - A new GCP project, `modules/env`, or any new Terraform Cloud organization.
 - Committed audit or cleanup tooling; the cleanup is one-off and Terraform owns the flag afterwards.
-- Deleting unmerged stale branches, or any branch other than the 12 above.
+- Deleting unmerged stale branches, any post-audit branch, or any branch other than the 12 above.
 - Per-repo long-lived integration branches; feature branch to PR to default branch stays the model.
 
 ## Proposed breakdown
 
 | Stage | Ticket | Delivers |
 | --- | --- | --- |
-| 1 | **Spec: GitHub repo governance** (this ticket) | This spec, the repo maps, the branch lists and the approved breakdown. |
-| 2 | **Public delivery: bootstrap policy, org-private and the branch cleanup** (MIR-279) | The 14 public imports, the `org` / `terraform-talos-modules` flips, the `org-private` repo, the `private` workspace with its sensitive token, and the 12-branch cleanup. |
+| 1 | **Spec: GitHub repo governance** (MIR-278) | This spec, the repo maps, the branch lists and the approved breakdown. |
+| 2 | **Public delivery: bootstrap policy, org-private and the branch cleanup** (MIR-279) | The 14 public imports, the `org` / `terraform-talos-modules` flips, the `org-private` repo, the `private` workspace with its sensitive token, and the re-derived 12-branch cleanup. |
 | 3 | **Private delivery: org-private Terraform root and the 16 private imports** (MIR-280) | The `org-private/terraform` root, the GitHub provider from the workspace token and the 16 private imports. |
 | 4 | **Release: verify 32 repos, 12 branch deletions and both plans** (MIR-281) | Both `spec/MIR-277` branches merged to `main`, the live API verification and the two clean plans. |
 
-All children are published in `backlog` under MIR-277 with `Branch: spec/MIR-277`, blockers first, and the release child last; this PR is the only approval, and no child is created after it opens.
+All children are published in `backlog` under MIR-277 with `Branch: spec/MIR-277`, blockers first, and the release child last. On this rework the four children already exist and were reconciled in place, never duplicated; this PR is the only approval, and no child is created after it opens.
 
 ## Further Notes
 
 - Audit snapshot: 2026-11-21T15:48Z, run as `miran248` through the GitHub API. 44 owned repos, 32 active (16 public, 16 private), 68 branches in the active repos, 12 merged, 17 open PRs.
-- `multica-sandbox#9` targets `spec/mir-270`, which is one of the 12 merged branches; the retarget to `main` is a required step of the cleanup, not an optional tidy-up.
+- Rework snapshot: 2026-11-21T17:17Z. 12 merged branches: the audit's 11 unchanged rows plus `mir-271-container-harness-spec` (PR #9's merged head); `spec/mir-270` is a non-default integration branch now at `daf3097` and stays out of scope. Open-PR heads in active repos: the 16 audit-set heads plus `multica-sandbox#11`, the archived `factory-probe-01bf35#1`, and this slice's `org#2`/`org#3`.
+- `multica-sandbox#9` merged into `spec/mir-270` at 16:29Z and `multica-sandbox#10` merged into it at 17:06:52Z, deleting #10's head branch; neither is an open PR now, so no retarget is needed. `agent/planner/mir-271-container-harness-spec` (PR #9's head) is a merged-PR head and stays in the delete set.
 - The repo maps are a point-in-time snapshot. Any settings change between this audit and the stage-2 apply is a rework of this spec, not an implementer decision.
-- On a spec rework the same head branch is force-pushed; the PR link, number and body survive.
+- On a spec rework the same head branch `MIR-278` is force-pushed. While the spec PR is still open its link, number and body survive; because PR #1 already merged, this rework opens a new PR from that same head branch against `spec/MIR-277`.
 - The epic has neither mode label: the slice is agent-implemented and agent-released, with the human merge in `awaiting_merge`.
