@@ -1,8 +1,13 @@
 # The private half of the repo policy lives in its own repository and its own
 # Terraform Cloud workspace, so no private token or private repo setting depends
 # on the public bootstrap workspace's repository.
-locals {
-  tfc_project_org = "prj-beKuyN9ULjaJkZyT"
+
+# The existing "org" project hosts this bootstrap workspace and the private
+# workspace below. It is read, not owned: this root must never manage the
+# project it runs inside.
+data "tfe_project" "org" {
+  organization = "miran248"
+  name         = "org"
 }
 
 resource "github_repository" "org_private" {
@@ -28,8 +33,8 @@ resource "github_repository" "org_private" {
 }
 
 resource "tfe_workspace" "private" {
-  organization = "miran248"
-  project_id   = local.tfc_project_org
+  organization = data.tfe_project.org.organization
+  project_id   = data.tfe_project.org.id
   name         = "private"
 
   working_directory = "terraform"
