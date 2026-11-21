@@ -45,14 +45,14 @@ resource "google_dns_record_set" "terraform_talos_modules_dev" {
 # repos
 resource "github_repository" "terraform_talos_modules" {
   name        = "terraform-talos-modules"
-  description = "a collection of opinionated terraform modules for running talos on hetzner"
+  description = "Kubernetes the hard way, automated with Terraform and Talos"
 
   allow_auto_merge       = true
-  allow_merge_commit     = true
-  allow_squash_merge     = false
+  allow_merge_commit     = false
+  allow_squash_merge     = true
   allow_rebase_merge     = false
   auto_init              = false
-  delete_branch_on_merge = false
+  delete_branch_on_merge = true
   has_issues             = true
   has_projects           = false
   has_wiki               = false
